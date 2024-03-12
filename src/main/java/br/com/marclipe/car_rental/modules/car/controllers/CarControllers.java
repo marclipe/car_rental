@@ -2,6 +2,7 @@ package br.com.marclipe.car_rental.modules.car.controllers;
 
 import br.com.marclipe.car_rental.modules.car.CarEntity;
 import br.com.marclipe.car_rental.modules.car.CarRepository;
+import br.com.marclipe.car_rental.modules.car.exceptions.CarFoundException;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ public class CarControllers {
 
   @PostMapping("/")
   public CarEntity create(@Valid @RequestBody CarEntity carEntity) {
+    this.carRepository.findByNameOrLicensePlate(carEntity.getName(), carEntity.getLicensePlate())
+    .ifPresent(car -> {
+      throw new CarFoundException();
+    });
+    
     return this.carRepository.save(carEntity);
   }
 
